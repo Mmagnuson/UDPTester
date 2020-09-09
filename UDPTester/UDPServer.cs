@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Text;
 
@@ -23,8 +23,10 @@ namespace UDPTester
             {
                 var receivedData = _server.Receive(ref _listenEndPoint);
                 Console.WriteLine(Encoding.ASCII.GetString(receivedData));
-                keyEventValue = Console.ReadKey();
-            } while (keyEventValue.Key != ConsoleKey.Escape); 
+
+               
+         
+            } while (true);
         }
     }
 }
