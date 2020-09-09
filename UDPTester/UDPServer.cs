@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 
 namespace UDPTester
 {
     public class UdpServer
     {
-        public void Listen(int listenPort = 5000)
+        private System.Net.Sockets.UdpClient _server;
+        private IPEndPoint _listenEndPoint;
+
+        public void StartServer(int listenPort = 5000)
         {
-            var done = false;
+            _server = new System.Net.Sockets.UdpClient(listenPort);
+            _listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
+        }
 
-            using var listener = new UdpClient(listenPort);
-            var listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
+        public void Receive()
+        {
 
-
-            while (!done)
+            ConsoleKeyInfo keyEventValue; //todo: fix the escape key with a thread.. 
+            do
             {
-                var receivedData = listener.Receive(ref listenEndPoint);
+                var receivedData = _server.Receive(ref _listenEndPoint);
                 Console.WriteLine(Encoding.ASCII.GetString(receivedData));
-            }
+                keyEventValue = Console.ReadKey();
+            } while (keyEventValue.Key != ConsoleKey.Escape); 
         }
     }
 }

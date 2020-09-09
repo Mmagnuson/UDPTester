@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using CommandLine;
 
@@ -13,7 +13,7 @@ namespace UDPTester
                 {
                     if (o.Client != string.Empty && !o.Server)
                     {
-                        if (!IPAddress.TryParse(o.Client, out var address))
+                        if (!IPAddress.TryParse(o.Client, out _))
                         {
                             Console.WriteLine("Not a valid server ip.");
                             return;
@@ -23,11 +23,13 @@ namespace UDPTester
                         Console.WriteLine("Port: " + o.Port);
                         Console.WriteLine("Test Period: " + o.Time + " Seconds");
                         Console.WriteLine("Packet Offset Period: " + o.PacketOffset + " Milliseconds");
-                        Console.WriteLine("Data Direction: Client > Server");
 
-                        var client = new UDPClient();
+                        var client = new UdpClient();
                         client.Connect(o.Client, o.Port);
-                        client.Send(TimeSpan.FromSeconds(Convert.ToDouble(o.Time)),  TimeSpan.FromMilliseconds(Convert.ToDouble(o.PacketOffset)));
+
+                        Console.WriteLine("Data Direction: Client > Server");
+                        client.Send(TimeSpan.FromSeconds(Convert.ToDouble(o.Time)),
+                            TimeSpan.FromMilliseconds(Convert.ToDouble(o.PacketOffset)));
                     }
 
                     if (o.Server && o.Client == string.Empty)
@@ -36,7 +38,10 @@ namespace UDPTester
                         Console.WriteLine("Port: " + o.Port);
 
                         var server = new UdpServer();
-                        server.Listen(o.Port);
+                        server.StartServer(o.Port);
+
+                        Console.WriteLine("Data Direction: Client > Server");
+                        server.Receive();
                     }
                 });
         }

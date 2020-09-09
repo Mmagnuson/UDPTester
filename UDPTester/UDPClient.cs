@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
 namespace UDPTester
 {
-    public class UDPClient
+    public class UdpClient
     {
-        private UdpClient client;
-        private IPEndPoint server;
+        private System.Net.Sockets.UdpClient _client;
+        private IPEndPoint _server;
 
         public void Connect(string ipAddress, int sendPort)
         {
             try
             {
-                client = new UdpClient();
-
-                server = new IPEndPoint(IPAddress.Parse(ipAddress), sendPort);
-
-                client.Connect(server);
+                _client = new System.Net.Sockets.UdpClient();
+                _server = new IPEndPoint(IPAddress.Parse(ipAddress), sendPort);
+                _client.Connect(_server);
             }
             catch (Exception ex)
             {
@@ -27,32 +24,25 @@ namespace UDPTester
             }
         }
 
-        private void Send(TimeSpan testLength, TimeSpan packetOffset)
+        public void Send(TimeSpan testLength, TimeSpan packetOffset)
         {
-            ulong counter = 0;
+            ulong packetCounter = 0;
             var endTime = DateTime.Now.Add(testLength);
             while (endTime > DateTime.Now)
             {
-                counter++;
+                packetCounter++;
 
-                var data = Encoding.ASCII.GetBytes("Packet: ," + Convert.ToString(counter) + ", Time: ," +
+
+                // Todo: turn the packet into a json object with data that can be parsed easily
+                var data = Encoding.ASCII.GetBytes("Packet: ," + Convert.ToString(packetCounter) + ", Time: ," +
                                                    DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") +
-                                                   ", Seconds: ," + DateTime.Now.ToString("ss.fff"));
+                                                   ", Seconds: ," + DateTime.Now.ToString("ss.fff")); 
 
-                client.Send(data, data.Length);
+                _client.Send(data, data.Length);
                 Thread.Sleep(packetOffset);
             }
         }
 
-        private void Receive()
-        {
-            bool done = false;
-
-            while (!done)
-            {
-                var receivedData = client.Receive(ref server);
-                Console.WriteLine(Encoding.ASCII.GetString(receivedData));
-            }
-        }
+   
     }
 }
