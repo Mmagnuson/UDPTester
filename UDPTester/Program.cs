@@ -41,7 +41,12 @@ namespace UDPTester
                         server.StartServer(o.Port);
 
                         Console.WriteLine("Data Direction: Client > Server");
-                        server.Receive();
+                        if (o.File != string.Empty)
+                        {
+                            Console.WriteLine("Output File: " + o.File);
+                        }
+
+                        server.Receive(o.File);
                     }
                 });
         }
@@ -64,6 +69,10 @@ namespace UDPTester
             [Option('o', "PacketOffset", Default = 100, Required = false,
                 HelpText = "Specify time between packets in milliseconds.")]
             public int PacketOffset { get; set; }
+
+            [Option('f', "file", Default = "", Required = false,
+                HelpText = "Save output to file -f filename.log")]
+            public string File { get; set; }
         }
     }
 }
