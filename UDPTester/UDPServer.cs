@@ -41,7 +41,7 @@ namespace UDPTester
 
                     lastPacket = packet;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // ignored
                 }
@@ -65,11 +65,13 @@ namespace UDPTester
 
                     lastPacket = packet;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // ignored
                 }
             } while (true);
+
+            
         }
     }
 }

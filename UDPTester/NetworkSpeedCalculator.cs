@@ -4,7 +4,7 @@ namespace UDPTester
 {
     public static class NetworkSpeedCalculator
     {
-        public static double mbps(int bits, TimeSpan period)
+        public static double Mbps(int bits, TimeSpan period)
         {
             var seconds = period.TotalMilliseconds / 1000; // ms to seconds
 
