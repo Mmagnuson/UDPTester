@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -34,11 +35,12 @@ namespace UDPTester
 
 
                 // Todo: turn the packet into a json object with data that can be parsed easily
-                var data = Encoding.ASCII.GetBytes("Packet: ," + Convert.ToString(packetCounter) + ", Time: ," +
-                                                   DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt") +
-                                                   ", Seconds: ," + DateTime.Now.ToString("ss.fff")); 
 
-                _client.Send(data, data.Length);
+                var packet = new DataPacket(packetCounter, packetOffset);
+                var encodedPacket = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(packet));
+
+
+                _client.Send(encodedPacket, encodedPacket.Length);
                 Thread.Sleep(packetOffset);
             }
         }

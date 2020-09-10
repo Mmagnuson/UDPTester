@@ -41,12 +41,12 @@ namespace UDPTester
                         server.StartServer(o.Port);
 
                         Console.WriteLine("Data Direction: Client > Server");
-                        if (o.File != string.Empty)
-                        {
-                            Console.WriteLine("Output File: " + o.File);
-                        }
+                        if (o.File != string.Empty) Console.WriteLine("Output File: " + o.File);
 
-                        server.Receive(o.File);
+                        if (o.File != string.Empty)
+                            server.Receive(o.File);
+                        else
+                            server.Receive();
                     }
                 });
         }

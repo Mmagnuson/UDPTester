@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -18,22 +19,62 @@ namespace UDPTester
 
         public void Receive(string outputFile = "")
         {
-            var writer = new StreamWriter(outputFile) {AutoFlush = true};
+            if (outputFile == string.Empty)
+                return;
 
-            ConsoleKeyInfo keyEventValue; //todo: fix the escape key with a thread..
+            var writer = new StreamWriter(outputFile) { AutoFlush = true };
+
+            var lastPacket = new DataPacket(0, new TimeSpan());
             do
             {
                 var receivedData = _server.Receive(ref _listenEndPoint);
 
-                if (outputFile != string.Empty)
+                try
                 {
-                    writer.WriteLine(Encoding.ASCII.GetString(receivedData));
+                    var packet = JsonConvert.DeserializeObject<DataPacket>(Encoding.ASCII.GetString(receivedData));
+                    packet.RecieveDateTime = DateTime.Now;
+
+                    var packetIdDeviation = packet.PacketId - lastPacket.PacketId;
+                    var packetTimeOffsetRaw = packet.RecieveDateTime - lastPacket.RecieveDateTime;
+                    var packetTimeOffsetAdjusted = packetTimeOffsetRaw.Subtract(packet.IntendedPacketOffset);
+
+                    Console.WriteLine(packet.PacketId.ToString() + "," + packetIdDeviation.ToString() + "," + packetTimeOffsetRaw.TotalMilliseconds + "," + packetTimeOffsetAdjusted.TotalMilliseconds);
+
+                    Console.WriteLine(packet.ToString());
+                    //writer.WriteLine(Encoding.ASCII.GetString(receivedData));
+
+                    lastPacket = packet;
                 }
+                catch (Exception ex)
+                {
+                }
+            } while (true);
+        }
 
-                Console.WriteLine(Encoding.ASCII.GetString(receivedData));
+        public void Receive()
+        {
+            var lastPacket = new DataPacket(0, new TimeSpan());
+            do
+            {
+                var receivedData = _server.Receive(ref _listenEndPoint);
 
-               
-         
+                try
+                {
+                    var packet = JsonConvert.DeserializeObject<DataPacket>(Encoding.ASCII.GetString(receivedData));
+                    packet.RecieveDateTime = DateTime.Now;
+
+                    var packetIdDeviation = packet.PacketId - lastPacket.PacketId;
+                    var packetTimeOffsetRaw = packet.RecieveDateTime - lastPacket.RecieveDateTime;
+                    var packetTimeOffsetAdjusted = packetTimeOffsetRaw.Subtract(packet.IntendedPacketOffset);
+
+                    Console.WriteLine(packet.PacketId.ToString() + "," + packetIdDeviation.ToString() + "," + packetTimeOffsetRaw.TotalMilliseconds + "," + packetTimeOffsetAdjusted.TotalMilliseconds);
+                    //writer.WriteLine(Encoding.ASCII.GetString(receivedData));
+
+                    lastPacket = packet;
+                }
+                catch (Exception ex)
+                {
+                }
             } while (true);
         }
     }
