@@ -1,6 +1,6 @@
+using CommandLine;
 using System;
 using System.Net;
-using CommandLine;
 
 namespace UDPTester
 {
@@ -36,6 +36,7 @@ namespace UDPTester
                     {
                         Console.WriteLine("Server Listening: ");
                         Console.WriteLine("Port: " + o.Port);
+                        Console.WriteLine("Statistics: " + o.Statistics.ToString());
 
                         var server = new UdpServer();
                         server.StartServer(o.Port);
@@ -44,9 +45,9 @@ namespace UDPTester
                         if (o.File != string.Empty) Console.WriteLine("Output File: " + o.File);
 
                         if (o.File != string.Empty)
-                            server.Receive(o.File);
+                            server.Receive(o.File,  o.Statistics);
                         else
-                            server.Receive();
+                            server.Receive( o.Statistics);
                     }
                 });
         }
@@ -73,6 +74,11 @@ namespace UDPTester
             [Option('f', "file", Default = "", Required = false,
                 HelpText = "Save output to file -f filename.log")]
             public string File { get; set; }
+
+
+            [Option("Statistics", Default = (bool)false, Required = false,
+                HelpText = "Display or save packet statistics.")]
+            public bool Statistics { get; set; }
         }
     }
 }

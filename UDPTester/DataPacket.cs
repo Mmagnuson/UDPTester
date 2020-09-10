@@ -8,11 +8,12 @@ namespace UDPTester
         public ulong PacketId { get; set; }
         public DateTime CreatedDateTime { get; set; }
         public TimeSpan IntendedPacketOffset { get; set; }
-
         public DateTime ReceiveDateTime { get; set; }
+
 
         public DataPacket()
         {
+            ReceiveDateTime = DateTime.Now;
         }
 
         public DataPacket(ulong packetId, TimeSpan intendedPacketOffset)

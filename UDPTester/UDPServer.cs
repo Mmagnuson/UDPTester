@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace UDPTester
 {
@@ -17,14 +17,16 @@ namespace UDPTester
             _listenEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
         }
 
-        public void Receive(string outputFile = "")
+        public void Receive(string outputFile = "",  bool outputStatistics = false)
         {
+            if (outputFile == null) throw new ArgumentNullException(nameof(outputFile));
             if (outputFile == string.Empty)
                 return;
 
-            var writer = new StreamWriter(outputFile) { AutoFlush = true };
+            var writer = new StreamWriter(outputFile) {AutoFlush = true};
 
             var lastPacket = new DataPacket(0, new TimeSpan());
+
             do
             {
                 var receivedData = _server.Receive(ref _listenEndPoint);
@@ -32,26 +34,21 @@ namespace UDPTester
                 try
                 {
                     var packet = JsonConvert.DeserializeObject<DataPacket>(Encoding.ASCII.GetString(receivedData));
-                    packet.RecieveDateTime = DateTime.Now;
+                    packet.ReceiveDateTime = DateTime.Now;
+                    var packetStats = new PacketStatistics(packet, lastPacket);
 
-                    var packetIdDeviation = packet.PacketId - lastPacket.PacketId;
-                    var packetTimeOffsetRaw = packet.RecieveDateTime - lastPacket.RecieveDateTime;
-                    var packetTimeOffsetAdjusted = packetTimeOffsetRaw.Subtract(packet.IntendedPacketOffset);
-
-                    Console.WriteLine(packet.PacketId.ToString() + "," + packetIdDeviation.ToString() + "," + packetTimeOffsetRaw.TotalMilliseconds + "," + packetTimeOffsetAdjusted.TotalMilliseconds);
-
-                    Console.WriteLine(packet.ToString());
-                    //writer.WriteLine(Encoding.ASCII.GetString(receivedData));
+                    writer.WriteLine(outputStatistics ? packetStats.ToString() : packet.ToString());
 
                     lastPacket = packet;
                 }
                 catch (Exception ex)
                 {
+                    // ignored
                 }
             } while (true);
         }
 
-        public void Receive()
+        public void Receive(bool outputStatistics = false)
         {
             var lastPacket = new DataPacket(0, new TimeSpan());
             do
@@ -61,19 +58,16 @@ namespace UDPTester
                 try
                 {
                     var packet = JsonConvert.DeserializeObject<DataPacket>(Encoding.ASCII.GetString(receivedData));
-                    packet.RecieveDateTime = DateTime.Now;
+                    packet.ReceiveDateTime = DateTime.Now;
+                    var packetStats = new PacketStatistics(packet, lastPacket);
 
-                    var packetIdDeviation = packet.PacketId - lastPacket.PacketId;
-                    var packetTimeOffsetRaw = packet.RecieveDateTime - lastPacket.RecieveDateTime;
-                    var packetTimeOffsetAdjusted = packetTimeOffsetRaw.Subtract(packet.IntendedPacketOffset);
-
-                    Console.WriteLine(packet.PacketId.ToString() + "," + packetIdDeviation.ToString() + "," + packetTimeOffsetRaw.TotalMilliseconds + "," + packetTimeOffsetAdjusted.TotalMilliseconds);
-                    //writer.WriteLine(Encoding.ASCII.GetString(receivedData));
+                    Console.WriteLine(outputStatistics ? packetStats.ToString() : packet.ToString());
 
                     lastPacket = packet;
                 }
                 catch (Exception ex)
                 {
+                    // ignored
                 }
             } while (true);
         }
