@@ -29,7 +29,7 @@ namespace UDPTester
         {
             ulong packetCounter = 0;
             var endTime = DateTime.Now.Add(testLength);
-            bool displaySpeed = true;
+            var displaySpeed = true;
             while (endTime > DateTime.Now)
             {
                 packetCounter++;
@@ -55,8 +55,8 @@ namespace UDPTester
                 if (displaySpeed)
                 {
                     displaySpeed = false;
-                    Console.WriteLine("Data mbps: " +
-                                      NetworkSpeedCalculator.mbps(encodedPacket.Length * 8, packetOffset));
+                    Console.WriteLine("Data Mbps: " +
+                                      NetworkSpeedCalculator.Mbps(encodedPacket.Length * 8, packetOffset));
                 }
 
                 _client.Send(encodedPacket, encodedPacket.Length);

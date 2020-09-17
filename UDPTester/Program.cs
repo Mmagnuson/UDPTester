@@ -1,6 +1,5 @@
 using CommandLine;
 using System;
-using System.Globalization;
 using System.Net;
 
 namespace UDPTester
@@ -23,7 +22,7 @@ namespace UDPTester
                         Console.WriteLine("Client Connecting To: " + o.Client);
                         Console.WriteLine("Port: " + o.Port);
                         Console.WriteLine("Test Period: " + o.Time + " Seconds");
-                        Console.WriteLine("Packet Offset Period: " + o.PacketOffset.ToString(CultureInfo.InvariantCulture) + " Milliseconds");
+                        Console.WriteLine("Packet Offset Period: " + o.PacketOffset.ToString() + " Milliseconds");
 
                         var client = new UdpClient();
                         client.Connect(o.Client, o.Port);
@@ -80,7 +79,7 @@ namespace UDPTester
                 HelpText = "Display or save packet statistics.")]
             public bool Statistics { get; set; }
 
-            [Option("PacketSize", Default = -1, Required = false,
+            [Option("PacketSize", Default = (int) -1, Required = false,
                 HelpText = "Override the packet size and set number of bytes per packet. <= 0 is ignored.")]
             public int PacketSize { get; set; }
         }

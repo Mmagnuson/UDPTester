@@ -14,7 +14,7 @@ namespace UDPTester
         public int IdDeviation => Convert.ToInt32(CurrentPacket.PacketId - PreviousPacket.PacketId);
         public TimeSpan TimeOffsetRaw => CurrentPacket.ReceiveDateTime - PreviousPacket.ReceiveDateTime;
         public TimeSpan TimeOffsetAdjusted => TimeOffsetRaw.Subtract(CurrentPacket.IntendedPacketOffset);
-        public bool IsOutOfOrder => IdDeviation != 1 ? true : false;
+        public bool IsOutOfOrder => IdDeviation != 1;
 
         public DateTime CreatedTime => CurrentPacket.CreatedDateTime;
         public DateTime ReceivedTime => CurrentPacket.ReceiveDateTime;
